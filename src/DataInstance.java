@@ -1,5 +1,5 @@
-import java.io.Serializable;
-import java.util.Date;
+import java.io.*;
+import java.util.*;
 
 /* A recorded instance of the training data */
 
@@ -20,4 +20,23 @@ public class DataInstance implements Serializable {
 		sb.append(label);
 		return sb.toString();
 	}
+
+	public void saveToCSV(String folderPath, String folder_name) {
+        // Define the file path (create folder if it doesn't exist)
+        File directory = new File(folderPath);
+        if (!directory.exists()) {
+            directory.mkdirs(); // Creates the directory if it does not exist
+        }
+
+        File file = new File(directory, folder_name);
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
+            writer.write(this.toCSVRow());
+            writer.newLine(); // Add a new line after each CSV row
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+	}
+
+
 }
