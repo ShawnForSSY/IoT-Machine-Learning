@@ -26,7 +26,16 @@ public class MLClassifier implements Serializable {
     public MLClassifier() {
     }
 
-    public void train(Map<String, List<DataInstance>> instances) {
+
+        // 添加 setOptions 方法
+    public void setOptions(String[] options) throws Exception {
+        if (classifier == null) {
+            classifier = new SMO();  // 如果没有初始化分类器，先初始化
+        }
+        classifier.setOptions(options);  // 设置 SMO 的选项
+    }
+
+    public void train(Map<String, List<DataInstance>> instances, double C, double gamma) {
         
         /* generate instances using the collected map of DataInstances */
         
@@ -50,17 +59,22 @@ public class MLClassifier implements Serializable {
              
              // Yang: RBFKernel requires tuning but might perform better than PolyKernel
              
-             /* 
-            classifier.setOptions(weka.core.Utils.splitOptions("-C 1.0 -L 0.0010 "
-                     + "-P 1.0E-12 -N 0 -V -1 -W 1 "
-                     + "-K \"weka.classifiers.functions.supportVector.RBFKernel "
-                     + "-C 0 -G 0.7\""));
-                     */
+             
+            // classifier.setOptions(weka.core.Utils.splitOptions("-C 1.0 -L 0.0010 "
+            //          + "-P 1.0E-12 -N 0 -V -1 -W 1 "
+            //          + "-K \"weka.classifiers.functions.supportVector.RBFKernel "
+            //          + "-C 0 -G 0.7\""));
+                     
             
-            classifier.setOptions(weka.core.Utils.splitOptions("-C 1.0 -L 0.0010 "
-                     + "-P 1.0E-12 -N 0 -V -1 -W 1 "
-                     + "-K \"weka.classifiers.functions.supportVector.PolyKernel "
-                     + "-C 0 -E 1.0\""));
+            // classifier.setOptions(weka.core.Utils.splitOptions("-C 1.0 -L 0.0010 "
+            //          + "-P 1.0E-12 -N 0 -V -1 -W 1 "
+            //          + "-K \"weka.classifiers.functions.supportVector.PolyKernel "
+            //          + "-C 0 -E 1.0\""));
+
+            String options = "-C " + C + " -L 0.0010 "
+								+ "-P 1.0E-12 -N 0 -V -1 -W 1 "
+								+ "-K \"weka.classifiers.functions.supportVector.RBFKernel -C 0 -G " + gamma + "\"";
+            classifier.setOptions(weka.core.Utils.splitOptions(options));
             
             classifier.buildClassifier(dataset);
             this.classattr = dataset.classAttribute();
